@@ -1,9 +1,9 @@
 
 // Crear una instancia de ProductManager
-const productManager = new productManager();
+const ProductManager = new ProductManager();
 
 // Llamar al método addProduct con los campos especificados
-const newProduct = productManager.addProduct(
+const newProduct = ProductManager.addProduct(
   "Producto Prueba",
   "Este es un producto prueba",
   200,
@@ -13,7 +13,7 @@ const newProduct = productManager.addProduct(
 );
 
 // Obtener la lista de productos (incluyendo el producto recién agregado)
-const productsList = productManager.getProducts();
+const productsList = ProductManager.getProducts();
 
 // Ver la lista de productos
 console.log("Lista de productos:");
