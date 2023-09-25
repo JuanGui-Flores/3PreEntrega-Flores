@@ -1,5 +1,23 @@
 {
   "dependencies": {
     "express": "^4.18.2"
-  }
+  },
+  "name": "desafio2-flores",
+  "description": "El Product Manager es una aplicación que te permite gestionar una lista de productos. Puedes agregar, actualizar, eliminar y ver productos utilizando esta aplicación.",
+  "version": "1.0.0",
+  "main": "app.js",
+  "devDependencies": {},
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JuanGui-Flores/Desafio3-Flores.git"
+  },
+  "author": "JuanGui Flores",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JuanGui-Flores/Desafio3-Flores/issues"
+  },
+  "homepage": "https://github.com/JuanGui-Flores/Desafio3-Flores#readme"
 }
