@@ -1,9 +1,11 @@
+// Importar la clase ProductManager
+const ProductManager = require('./ProductManager');
 
 // Crear una instancia de ProductManager
-const ProductManager = new ProductManager();
+const productManager = new ProductManager();
 
 // Llamar al método addProduct con los campos especificados
-const newProduct = ProductManager.addProduct(
+const newProduct = productManager.addProduct(
   "Producto Prueba",
   "Este es un producto prueba",
   200,
@@ -13,10 +15,10 @@ const newProduct = ProductManager.addProduct(
 );
 
 // Obtener la lista de productos (incluyendo el producto recién agregado)
-const productsList = ProductManager.getProducts();
+const productsList = productManager.getProducts();
 
 // Ver la lista de productos
 console.log("Lista de productos:");
 productsList.forEach((product) => {
-  console.log(product.toString());
+  console.log(product);
 });
