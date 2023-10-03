@@ -22,22 +22,40 @@ app.post('/productos', (req, res) => {
   }
 });
 
+app.get('/products', async (req, res) => {
+  try {
+    const { limit } = req.query;
+    let data;
+    if (!limit) {
+      data = await LockManager.getProducts();
+
+    } else {
+      data = await LockManager.getProducts().slice(0, limit);
+    }
+    res.json(data);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+
+
 // Ruta la cual recibe por req.params el producto id y devolver solo ese producto
 app.get('/products/pid', async (req, res) => {
   try {
-  const produtId = rew.params.pid;
-  const productos = await LockManager.getProducts();
-  const productoFilter = productos.filter(
-    (producto) => producto.id == produtId
-  );
-  if (productoFilter.lenght) {
-    res.send(productoFilter);
-  } else {
-    res.send({error: "Producto no encontrado"});
+    const produtId = rew.params.pid;
+    const productos = await LockManager.getProducts();
+    const productoFilter = productos.filter(
+      (producto) => producto.id == produtId
+    );
+    if (productoFilter.lenght) {
+      res.send(productoFilter);
+    } else {
+      res.send({ error: "Producto no encontrado" });
+    }
+  } catch (error) {
+    res.status(500).send(error.message);
   }
-} catch (error) {
-  res.status(500).send(error.message);
-}
 });
 
 // Otras rutas para actualizar y eliminar productos
