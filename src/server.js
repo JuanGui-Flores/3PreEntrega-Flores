@@ -22,14 +22,25 @@ app.post('/productos', (req, res) => {
   }
 });
 
-// Ruta para obtener la lista de productos
-app.get('/productos', (req, res) => {
-  const productsList = productManager.getProducts();
-  res.json(productsList);
+// Ruta la cual recibe por req.params el producto id y devolver solo ese producto
+app.get('/products/pid', async (req, res) => {
+  try {
+  const produtId = rew.params.pid;
+  const productos = await LockManager.getProducts();
+  const productoFilter = productos.filter(
+    (producto) => producto.id == produtId
+  );
+  if (productoFilter.lenght) {
+    res.send(productoFilter);
+  } else {
+    res.send({error: "Producto no encontrado"});
+  }
+} catch (error) {
+  res.status(500).send(error.message);
+}
 });
 
 // Otras rutas para actualizar y eliminar productos
-
 app.listen(port, () => {
   console.log(`Servidor Express escuchando en el puerto ${port}`);
 });
