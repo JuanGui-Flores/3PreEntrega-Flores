@@ -3,15 +3,17 @@ const bodyParser = require('body-parser');
 const ProductManager = require('./ProductManager');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const productManager = new ProductManager();
+const cartManager = new CartManager();
+const productsRouter = express.Router();
 
 // Ruta para agregar un producto
-app.post('/productos', (req, res) => {
+productsRouter.post('/', (req, res) => {
   const { title, description, price, thumbnail, code, stock } = req.body;
 
   try {
@@ -19,10 +21,12 @@ app.post('/productos', (req, res) => {
     res.status(201).json(newProduct);
   } catch (error) {
     res.status(400).json({ error: error.message });
+    productsRouter.post('/', (req, res) => {
+
   }
 });
 
-app.get('/products', async (req, res) => {
+productsRouter.get('/', async (req, res) => {
   try {
     const { limit } = req.query;
     let data;
@@ -38,17 +42,15 @@ app.get('/products', async (req, res) => {
   }
 });
 
-
-
 // Ruta la cual recibe por req.params el producto id y devolver solo ese producto
-app.get('/products/pid', async (req, res) => {
+app.get('/products/:pid', async (req, res) => { // Corregimos la ruta y el parámetro
   try {
-    const produtId = rew.params.pid;
+    const productId = req.params.pid; // Corregimos la variable
     const productos = await LockManager.getProducts();
     const productoFilter = productos.filter(
-      (producto) => producto.id == produtId
+      (producto) => producto.id == productId
     );
-    if (productoFilter.lenght) {
+    if (productoFilter.length) {
       res.send(productoFilter);
     } else {
       res.send({ error: "Producto no encontrado" });
@@ -58,7 +60,8 @@ app.get('/products/pid', async (req, res) => {
   }
 });
 
-// Otras rutas para actualizar y eliminar productos
+app.use('/carts', cartsRouter);
+
 app.listen(port, () => {
   console.log(`Servidor Express escuchando en el puerto ${port}`);
 });
