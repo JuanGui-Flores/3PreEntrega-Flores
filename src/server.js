@@ -9,8 +9,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const productManager = new ProductManager();
-// const cartManager = new CartManager();
-// const productsRouter = express.Router();
+
 
 // Ruta para agregar un producto
 app.post("/", (req, res) => {
@@ -28,6 +27,31 @@ app.post("/", (req, res) => {
     res.status(201).json(newProduct);
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+// Actualizar un producto por su ID
+app.put('/products/:id', (req, res) => {
+  const productId = parseInt(req.params.id);
+  const newData = req.body;
+
+  try {
+    const updatedProduct = productManager.updateProduct(productId, newData);
+    res.json(updatedProduct);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+});
+
+// Eliminar un producto por su ID
+app.delete('/products/:id', (req, res) => {
+  const productId = parseInt(req.params.id);
+
+  try {
+    const deletedProduct = productManager.deleteProduct(productId);
+    res.json(deletedProduct);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
   }
 });
 
@@ -65,7 +89,7 @@ app.get("/products/:pid", async (req, res) => {
   }
 });
 
-// app.use("/carts", cartsRouter);
+app.use("/carts", cartsRouter);
 
 app.listen(port, () => {
   console.log(`Servidor Express escuchando en el puerto ${port}`);

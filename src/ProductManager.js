@@ -6,18 +6,29 @@ class ProductManager {
 constructor() {
   this.products = [];
   this.nextProductId = 1;
+  this.loadProductsFromFile(); 
+}
 
+loadProductsFromFile() {
   try {
-    const data = fs.readFileSync(filePath, 'utf8');
-    this.products = JSON.parse(data);
-    if (Array.isArray(this.products)) {
-      const lastProduct = this.products[this.products.length - 1];
-      if (lastProduct) {
-        this.nextProductId = lastProduct.id + 1;
+      const data = fs.readFileSync(filePath, 'utf8');
+      this.products = JSON.parse(data);
+      if (Array.isArray(this.products)) {
+          const lastProduct = this.products[this.products.length - 1];
+          if (lastProduct) {
+              this.nextProductId = lastProduct.id + 1;
+          }
       }
-    }
   } catch (error) {
-    console.error('Error al cargar productos desde el archivo:', error.message);
+      console.error('Error al cargar productos desde el archivo:', error.message);
+  }
+}
+
+saveProductsToFile() {
+  try {
+      fs.writeFileSync(filePath, JSON.stringify(this.products, null, 2), 'utf8');
+  } catch (error) {
+      console.error('Error al guardar el producto en el archivo:', error.message);
   }
 }
 
