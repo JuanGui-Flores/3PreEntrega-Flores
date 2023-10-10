@@ -25,8 +25,15 @@ const productManager = new ProductManager();
 // Ruta para cargar la página principal
 app.get('/', (req, res) => {
   const productsList = productManager.getProducts();
-  res.render('index', { productsList });
+  res.render('home', { productsList });
 });
+
+// Ruta para mostrar la vista de productos en tiempo real
+app.get('/realtimeproducts', (req, res) => {
+  const productsList = productManager.getProducts();
+  res.render('realTimeProducts', { productsList });
+});
+
 
 // Ruta para agregar un producto mediante un formulario
 app.post('/add-product', (req, res) => {
