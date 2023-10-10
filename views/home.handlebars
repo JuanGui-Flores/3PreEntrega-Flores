@@ -1,19 +1,22 @@
 <html>
-  <head>
+
+<head>
     <title>Lista de Productos</title>
-  </head>
-  <body>
+</head>
+
+<body>
     <h1>Lista de Productos</h1>
     <ul>
-      {{#each productsList}}
+        {{#each productsList}}
         <li>
-          <h2>{{title}}</h2>
-          <p>{{description}}</p>
-          <p>Precio: ${{price}}</p>
-          <p>Código: {{code}}</p>
-          <p>Stock: {{stock}}</p>
+            <h2>{{title}}</h2>
+            <p>{{description}}</p>
+            <p>Precio: ${{price}}</p>
+            <p>Código: {{code}}</p>
+            <p>Stock: {{stock}}</p>
         </li>
-      {{/each}}
+        {{/each}}
     </ul>
-  </body>
+</body>
+
 </html>
