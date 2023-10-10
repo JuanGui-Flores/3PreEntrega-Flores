@@ -59,7 +59,10 @@ router.post('/:cid/product/:pid', (req, res) => {
 function generateCartId() {
     // Puedes implementar lógica para generar un ID único aquí, por ejemplo, usando un paquete como `uuid`.
     // Por simplicidad, aquí generaremos un ID único basado en un timestamp.
-    return Date.now().toString();
+    const timestamp = new Date().getTime();
+    const uniqueId = `${timestamp}${Math.floor(Math.random() * 1000)}`;
+    return uniqueId;
 }
+
 
 module.exports = router;
