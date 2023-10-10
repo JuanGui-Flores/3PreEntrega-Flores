@@ -1,6 +1,6 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const ProductManager = require('./ProductManager');
+const express = require("express");
+const bodyParser = require("body-parser");
+const ProductManager = require("./ProductManager");
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -9,32 +9,36 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const productManager = new ProductManager();
-const cartManager = new CartManager();
-const productsRouter = express.Router();
+// const cartManager = new CartManager();
+// const productsRouter = express.Router();
 
 // Ruta para agregar un producto
-productsRouter.post('/', (req, res) => {
+app.post("/", (req, res) => {
   const { title, description, price, thumbnail, code, stock } = req.body;
-
+  console.log(req.body);
   try {
-    const newProduct = productManager.addProduct(title, description, price, thumbnail, code, stock);
+    const newProduct = productManager.addProduct(
+      title,
+      description,
+      price,
+      thumbnail,
+      code,
+      stock
+    );
     res.status(201).json(newProduct);
   } catch (error) {
     res.status(400).json({ error: error.message });
-    productsRouter.post('/', (req, res) => {
-
   }
 });
 
-productsRouter.get('/', async (req, res) => {
+app.get("/", async (req, res) => {
   try {
     const { limit } = req.query;
     let data;
     if (!limit) {
-      data = await LockManager.getProducts();
-
+      data = await productManager.getProducts();
     } else {
-      data = await LockManager.getProducts().slice(0, limit);
+      data = await productManager.getProducts().slice(0, limit);
     }
     res.json(data);
   } catch (error) {
@@ -43,10 +47,11 @@ productsRouter.get('/', async (req, res) => {
 });
 
 // Ruta la cual recibe por req.params el producto id y devolver solo ese producto
-app.get('/products/:pid', async (req, res) => { // Corregimos la ruta y el parámetro
+app.get("/products/:pid", async (req, res) => {
+  // Corregimos la ruta y el parámetro
   try {
     const productId = req.params.pid; // Corregimos la variable
-    const productos = await LockManager.getProducts();
+    const productos = await productManager.getProducts();
     const productoFilter = productos.filter(
       (producto) => producto.id == productId
     );
@@ -60,7 +65,7 @@ app.get('/products/:pid', async (req, res) => { // Corregimos la ruta y el pará
   }
 });
 
-app.use('/carts', cartsRouter);
+// app.use("/carts", cartsRouter);
 
 app.listen(port, () => {
   console.log(`Servidor Express escuchando en el puerto ${port}`);

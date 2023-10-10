@@ -10,7 +10,52 @@ const newProduct = productManager.addProduct(
   "Este es un producto prueba",
   200,
   "Sin imagen",
-  "abc123",
+  "abc1223t34t3",
+  25
+);
+
+productManager.addProduct(
+  "Producto Prueba",
+  "Este es un producto prueba",
+  200,
+  "Sin imagen",
+  "abc12ewer3",
+  25
+);
+
+productManager.addProduct(
+  "Producto Prueba",
+  "Este es un producto prueba",
+  200,
+  "Sin imagen",
+  "abc12werwr3",
+  25
+);
+
+productManager.addProduct(
+  "Producto Prueba",
+  "Este es un producto prueba",
+  200,
+  "Sin imagen",
+  "abc12werw3",
+  25
+);
+
+productManager.addProduct(
+  "Producto Prueba",
+  "Este es un producto prueba",
+  200,
+  "Sin imagen",
+  "abc12ewett3",
+  25
+);
+
+productManager.addProduct(
+  "Producto Prueba",
+  "Este es un producto prueba",
+  200,
+  "Sin imagen",
+  "abc12444tgg3",
   25
 );
 
