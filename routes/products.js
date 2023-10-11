@@ -1,5 +1,4 @@
-// productsData.js
-const productsData = [
+const products  = [
     {
         title: 'Producto 1',
         description: 'Descripción del Producto 1',
@@ -82,4 +81,4 @@ const productsData = [
     },
 ];
 
-module.exports = productsData;
+module.exports = products;
