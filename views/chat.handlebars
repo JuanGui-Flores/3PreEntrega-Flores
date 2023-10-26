@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <title>Chat</title>
+
+    <script>
+      const socket = new WebSocket('ws://localhost:3000'); // Reemplaza con la
+      URL de tu servidor socket.addEventListener('open', (event) => {
+      console.log('Conexión establecida'); });
+      socket.addEventListener('message', (event) => { const message =
+      JSON.parse(event.data); // Procesa el mensaje recibido y muestra en la
+      interfaz de usuario // Por ejemplo, puedes agregar el mensaje a la lista
+      de mensajes en tu chat });
+      document.getElementById('send-button').addEventListener('click', () => {
+      const messageInput = document.getElementById('message-input'); const
+      messageText = messageInput.value; const message = { text: messageText };
+      socket.send(JSON.stringify(message)); messageInput.value = ''; // Limpia
+      el campo de entrada después de enviar el mensaje });
+    </script>
+
+  </head>
+  <body>
+    <div class="chat-container">
+      <div class="chat-header">
+        <h1>Chat en Vivo</h1>
+      </div>
+      <div class="chat-messages">
+        <ul class="message-list">
+          {{#each messages}}
+            <li>
+              <span class="message-author">{{author}}:</span>
+              <span class="message-text">{{text}}</span>
+            </li>
+          {{/each}}
+        </ul>
+      </div>
+      <div class="chat-input">
+        <input
+          type="text"
+          id="message-input"
+          placeholder="Escribe tu mensaje..."
+        />
+        <button id="send-button">Enviar</button>
+      </div>
+    </div>
+
+    <script>
+      // Agrega tu lógica JavaScript para manejar el chat aquí
+    </script>
+  </body>
+</html>
