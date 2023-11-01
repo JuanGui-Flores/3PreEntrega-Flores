@@ -22,6 +22,7 @@ db.once('open', () => {
   console.log('Conexión a MongoDB exitosa');
 });
 
+
 // Define un modelo de datos utilizando Mongoose
 const productSchema = new mongoose.Schema({
   title: String,
