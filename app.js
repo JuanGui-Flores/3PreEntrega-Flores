@@ -10,8 +10,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
-// Conecta tu aplicación a MongoDB
-mongoose.connect('mongodb://localhost/tu_base_de_datos', {
+mongoose.connect('mongodb://localhost:27017', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
@@ -23,7 +22,6 @@ db.once('open', () => {
 });
 
 
-// Define un modelo de datos utilizando Mongoose
 const productSchema = new mongoose.Schema({
   title: String,
   description: String,
@@ -37,17 +35,31 @@ const Producto = mongoose.model('Producto', productSchema);
 
 const filePath = 'products.json';
 
-// Configurar Handlebars como motor de plantillas
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
 
-// Configurar el uso de bodyParser para analizar JSON
 app.use(bodyParser.json());
 
-// Ruta para cargar la página principal
+// Ruta para cargar la página principal con filtros, paginación y ordenamientos
 app.get('/', (req, res) => {
-  // Aquí puedes usar Mongoose para obtener productos desde la base de datos
-  Producto.find({}, (err, products) => {
+  const { filter, page, limit, sortField, sortOrder } = req.query;
+
+  // Construye un objeto de filtros basado en las consultas
+  const filters = {};
+  if (filter) {
+    filters.title = { $regex: filter, $options: 'i' }; // Búsqueda de texto insensible a mayúsculas y minúsculas
+    // Agrega más campos de filtro según sea necesario
+  }
+
+  // Opciones de paginación y ordenamiento
+  const options = {
+    skip: (page - 1) * limit,
+    limit: limit,
+    sort: { [sortField]: sortOrder === 'desc' ? -1 : 1 },
+  };
+
+  // Realiza la consulta a la base de datos con filtros, paginación y ordenamiento
+  Producto.find(filters, null, options, (err, products) => {
     if (err) {
       console.error(err);
       res.status(500).send('Error al obtener productos');
@@ -59,7 +71,7 @@ app.get('/', (req, res) => {
 
 // Ruta para mostrar la vista de productos en tiempo real
 app.get('/realtimeproducts', (req, res) => {
-  // Aquí puedes usar Mongoose para obtener productos desde la base de datos
+  // Agrega funcionalidad similar a la ruta principal para permitir filtros, paginación y ordenamientos
   Producto.find({}, (err, products) => {
     if (err) {
       console.error(err);
@@ -73,11 +85,11 @@ app.get('/realtimeproducts', (req, res) => {
 // Ruta para agregar un producto mediante un formulario
 app.post('/add-product', (req, res) => {
   const newProduct = new Producto({
-    title: "Producto Prueba",
-    description: "Este es un producto prueba",
+    title: 'Producto Prueba',
+    description: 'Este es un producto prueba',
     price: 200,
-    thumbnail: "Sin imagen",
-    code: "abc1223t34t3",
+    thumbnail: 'Sin imagen',
+    code: 'abc1223t34t3',
     stock: 25,
   });
 
@@ -107,7 +119,7 @@ Producto.find({}, (err, products) => {
   if (err) {
     console.error(err);
   } else {
-    console.log("Lista de productos:");
+    console.log('Lista de productos:');
     products.forEach((product) => {
       console.log(product);
     });
