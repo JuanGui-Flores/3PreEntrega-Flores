@@ -4,7 +4,7 @@
     "mongoose": "^7.6.3"
   },
   "name": "desafio4-flores",
-  "description": "El Product Manager es una aplicación que te permite gestionar una lista de productos. Puedes agregar, actualizar, eliminar y ver productos utilizando esta aplicación.",
+  "description": "-",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
