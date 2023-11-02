@@ -5,10 +5,13 @@ const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
 const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
+const initDB = require('./config/db');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
+
+initDB();
 
 mongoose.connect('mongodb://localhost:27017', {
   useNewUrlParser: true,
