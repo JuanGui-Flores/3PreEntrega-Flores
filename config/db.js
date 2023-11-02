@@ -13,7 +13,11 @@ module.exports = () => {
                 useUnifiedTopology: true
             },
             (err) => {
-                
+                if(err){
+                    console.log('Error al conectar!')
+                }else{
+                    console.log('Conectado correctamente!')
+                }
             },
         )
 
