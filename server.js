@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const ProductManager = require("./ProductManager");
+const ProductManager = require("./src/ProductManager");
 
 const app = express();
 const port = process.env.PORT || 8080;
