@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productos</title>
+</head>
+<body>
+  <h1>Bienvenido, <%= user.username %></h1>
+  <!-- Mostrar otros datos del usuario si es necesario -->
+  
+  <!-- Lista de productos -->
+  <ul>
+    <% products.forEach((product) => { %>
+      <li>
+        <strong><%= product.title %></strong><br>
+        Descripción: <%= product.description %><br>
+        Precio: <%= product.price %><br>
+        Código: <%= product.code %><br>
+        Stock: <%= product.stock %><br>
+      </li>
+    <% }); %>
+  </ul>
+</body>
+</html>

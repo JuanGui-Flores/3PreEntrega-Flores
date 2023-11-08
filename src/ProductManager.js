@@ -77,6 +77,8 @@ getProducts() {
   return this.products;
 }
 
+
+/*Ruta para actualizar un producto*/
 updateProduct(productId, newData) {
   const productIndex = this.products.findIndex((product) => product.id === productId);
   if (productIndex === -1) {
@@ -94,6 +96,8 @@ updateProduct(productId, newData) {
   return this.products[productIndex];
 }
 
+
+/*Ruta para eliminar un producto */
 deleteProduct(productId) {
   const productIndex = this.products.findIndex((product) => product.id === productId);
   if (productIndex === -1) {
@@ -114,6 +118,15 @@ deleteProduct(productId) {
 saveProductsToFile() {
   fs.writeFileSync(filePath, JSON.stringify(this.products, null, 2), 'utf8');
 }
+
 }
+// Ruta para mostrar la vista de productos
+app.get('/productos', (req, res) => {
+  const user = req.user; // Obtén la información del usuario desde la sesión (suponiendo que se almacenó allí)
+  const products = productManager.getProducts(); // Supongamos que tienes un objeto productManager para gestionar productos
+
+  res.render('productos', { user, products });
+});
+
 
 module.exports = ProductManager;
