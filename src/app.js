@@ -10,7 +10,7 @@ const initDB = require('./config/db');
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
-const authRoutes = require('./routes/auth');
+const authRouter = require('./routes/authRouter');
 
 initDB();
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ProductManager = require('./src/dao/models/ProductManager.js');
+const authRouter = require('./routes/authRouter');
 
 // Ruta para cargar la página principal con filtros, paginación y ordenamientos
 router.get('/', (req, res) => {
@@ -67,4 +68,4 @@ router.post('/add-product', (req, res) => {
   });
 });
 
-module.exports = router;
+module.exports = viewRouter;
