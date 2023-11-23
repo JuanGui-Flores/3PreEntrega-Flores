@@ -5,11 +5,10 @@ const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
 const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 const initDB = require('./config/db');
-
-const app = express();
-const server = http.createServer(app);
-const io = socketIO(server);
 const authRouter = require('./routes/authRouter');
 
 initDB();
@@ -25,7 +24,6 @@ db.once('open', () => {
   console.log('Conexión a MongoDB exitosa');
 });
 
-
 const productSchema = new mongoose.Schema({
   title: String,
   description: String,
@@ -39,10 +37,47 @@ const Producto = mongoose.model('Producto', productSchema);
 
 const filePath = 'products.json';
 
+const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
+
+// Configuración de Passport
+passport.use(new LocalStrategy(
+  (username, password, done) => {
+    // Aquí debes verificar las credenciales del usuario en tu base de datos
+    // Replace the following line with your actual user authentication logic
+    if (username === 'admin' && password === 'admin') {
+      return done(null, { id: 1, username: 'admin' });
+    } else {
+      return done(null, false, { message: 'Credenciales incorrectas' });
+    }
+  }
+));
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  // Aquí debes buscar al usuario en tu base de datos
+  // Replace the following line with your actual user lookup logic
+  const user = { id: 1, username: 'admin' };
+  done(null, user);
+});
+
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
 
 app.use(bodyParser.json());
+
+// Configuración de session para Passport
+app.use(session({
+  secret: 'tu_secreto', // Cambia esto a una cadena secreta más segura
+  resave: false,
+  saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Configurar WebSockets
 io.on('connection', (socket) => {
@@ -64,6 +99,11 @@ Producto.find({}, (err, products) => {
     });
   }
 });
+
+// Rutas de autenticación
+app.use('/auth', authRouter);
+
+// Resto de las rutas y configuraciones de la aplicación...
 
 // Iniciar el servidor HTTP
 const PORT = process.env.PORT || 3000;
