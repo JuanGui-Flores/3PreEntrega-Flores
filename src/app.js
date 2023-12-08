@@ -11,6 +11,9 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/users');
+const UserController = require('../controllers/userController');
+
 
 initDB();
 
