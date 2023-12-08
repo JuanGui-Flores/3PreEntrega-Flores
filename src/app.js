@@ -5,14 +5,14 @@ const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
 const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 const initDB = require('./config/db');
-
-const app = express();
-const server = http.createServer(app);
-const io = socketIO(server);
-const authRoutes = require('./routes/auth');
+const authRouter = require('./routes/authRouter');
 const userRoutes = require('./routes/users');
 const UserController = require('../controllers/userController');
+
 
 
 initDB();
@@ -28,7 +28,6 @@ db.once('open', () => {
   console.log('Conexión a MongoDB exitosa');
 });
 
-
 const productSchema = new mongoose.Schema({
   title: String,
   description: String,
@@ -42,75 +41,47 @@ const Producto = mongoose.model('Producto', productSchema);
 
 const filePath = 'products.json';
 
+const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
+
+// Configuración de Passport
+passport.use(new LocalStrategy(
+  (username, password, done) => {
+    // Aquí debes verificar las credenciales del usuario en tu base de datos
+    // Replace the following line with your actual user authentication logic
+    if (username === 'admin' && password === 'admin') {
+      return done(null, { id: 1, username: 'admin' });
+    } else {
+      return done(null, false, { message: 'Credenciales incorrectas' });
+    }
+  }
+));
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  // Aquí debes buscar al usuario en tu base de datos
+  // Replace the following line with your actual user lookup logic
+  const user = { id: 1, username: 'admin' };
+  done(null, user);
+});
+
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
 
 app.use(bodyParser.json());
 
-// Ruta para cargar la página principal con filtros, paginación y ordenamientos
-app.get('/', (req, res) => {
-  const { filter, page, limit, sortField, sortOrder } = req.query;
-
-  // Construye un objeto de filtros basado en las consultas
-  const filters = {};
-  if (filter) {
-    filters.title = { $regex: filter, $options: 'i' }; // Búsqueda de texto insensible a mayúsculas y minúsculas
-    // Agrega más campos de filtro según sea necesario
-  }
-
-  // Opciones de paginación y ordenamiento
-  const options = {
-    skip: (page - 1) * limit,
-    limit: limit,
-    sort: { [sortField]: sortOrder === 'desc' ? -1 : 1 },
-  };
-
-  // Realiza la consulta a la base de datos con filtros, paginación y ordenamiento
-  Producto.find(filters, null, options, (err, products) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Error al obtener productos');
-    } else {
-      res.render('home', { productsList: products });
-    }
-  });
-});
-
-// Ruta para mostrar la vista de productos en tiempo real
-app.get('/realtimeproducts', (req, res) => {
-  // Agrega funcionalidad similar a la ruta principal para permitir filtros, paginación y ordenamientos
-  Producto.find({}, (err, products) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Error al obtener productos');
-    } else {
-      res.render('realTimeProducts', { productsList: products });
-    }
-  });
-});
-
-// Ruta para agregar un producto mediante un formulario
-app.post('/add-product', (req, res) => {
-  const newProduct = new Producto({
-    title: 'Producto Prueba',
-    description: 'Este es un producto prueba',
-    price: 200,
-    thumbnail: 'Sin imagen',
-    code: 'abc1223t34t3',
-    stock: 25,
-  });
-
-  newProduct.save((err, product) => {
-    if (err) {
-      console.error(err);
-      res.status(400).json({ error: err.message });
-    } else {
-      // Emitir evento a través de WebSocket
-      io.emit('productAdded', product);
-      res.redirect('/');
-    }
-  });
-});
+// Configuración de session para Passport
+app.use(session({
+  secret: 'tu_secreto', // Cambia esto a una cadena secreta más segura
+  resave: false,
+  saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Configurar WebSockets
 io.on('connection', (socket) => {
@@ -132,6 +103,11 @@ Producto.find({}, (err, products) => {
     });
   }
 });
+
+// Rutas de autenticación
+app.use('/auth', authRouter);
+
+// Resto de las rutas y configuraciones de la aplicación...
 
 // Iniciar el servidor HTTP
 const PORT = process.env.PORT || 3000;

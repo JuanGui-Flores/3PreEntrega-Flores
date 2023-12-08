@@ -1,53 +1,71 @@
 const express = require('express');
 const router = express.Router();
+const ProductManager = require('./src/dao/models/ProductManager.js');
+const authRouter = require('./routes/authRouter');
 
-// Rutas de productos
-router.get('/products', (req, res) => {
-  // Lógica para mostrar una lista de productos
-  res.send('Mostrar lista de productos');
+// Ruta para cargar la página principal con filtros, paginación y ordenamientos
+router.get('/', (req, res) => {
+  const { filter, page, limit, sortField, sortOrder } = req.query;
+
+  // Construye un objeto de filtros basado en las consultas
+  const filters = {};
+  if (filter) {
+    filters.title = { $regex: filter, $options: 'i' }; // Búsqueda de texto insensible a mayúsculas y minúsculas
+    // Agrega más campos de filtro según sea necesario
+  }
+
+  // Opciones de paginación y ordenamiento
+  const options = {
+    skip: (page - 1) * limit,
+    limit: limit,
+    sort: { [sortField]: sortOrder === 'desc' ? -1 : 1 },
+  };
+
+  // Realiza la consulta a la base de datos con filtros, paginación y ordenamiento
+  Producto.find(filters, null, options, (err, products) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error al obtener productos');
+    } else {
+      res.render('home', { productsList: products });
+    }
+  });
 });
 
-router.get('/products/:id', (req, res) => {
-  // Lógica para mostrar detalles de un producto por su ID
-  res.send(`Mostrar detalles del producto con ID: ${req.params.id}`);
+// Ruta para mostrar la vista de productos en tiempo real
+router.get('/realtimeproducts', (req, res) => {
+  // Agrega funcionalidad similar a la ruta principal para permitir filtros, paginación y ordenamientos
+  Producto.find({}, (err, products) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error al obtener productos');
+    } else {
+      res.render('realTimeProducts', { productsList: products });
+    }
+  });
 });
 
-router.post('/products', (req, res) => {
-  // Lógica para agregar un nuevo producto
-  res.send('Agregar un nuevo producto');
+// Ruta para agregar un producto mediante un formulario
+router.post('/add-product', (req, res) => {
+  const newProduct = new Producto({
+    title: 'Producto Prueba',
+    description: 'Este es un producto prueba',
+    price: 200,
+    thumbnail: 'Sin imagen',
+    code: 'abc1223t34t3',
+    stock: 25,
+  });
+
+  newProduct.save((err, product) => {
+    if (err) {
+      console.error(err);
+      res.status(400).json({ error: err.message });
+    } else {
+      // Emitir evento a través de WebSocket
+      io.emit('productAdded', product);
+      res.redirect('/');
+    }
+  });
 });
 
-router.put('/products/:id', (req, res) => {
-  // Lógica para actualizar la información de un producto existente
-  res.send(`Actualizar producto con ID: ${req.params.id}`);
-});
-
-router.delete('/products/:id', (req, res) => {
-  // Lógica para eliminar un producto existente
-  res.send(`Eliminar producto con ID: ${req.params.id}`);
-});
-
-// Rutas de carrito de compras
-router.get('/cart', (req, res) => {
-  // Lógica para mostrar el contenido del carrito de compras
-  res.send('Mostrar contenido del carrito de compras');
-});
-
-router.post('/cart/add/:id', (req, res) => {
-  // Lógica para agregar un producto al carrito
-  res.send(`Agregar producto con ID ${req.params.id} al carrito`);
-});
-
-router.post('/cart/remove/:id', (req, res) => {
-  // Lógica para eliminar un producto del carrito
-  res.send(`Eliminar producto con ID ${req.params.id} del carrito`);
-});
-
-router.post('/cart/checkout', (req, res) => {
-  // Lógica para procesar la compra y finalizar el pedido
-  res.send('Procesar la compra y finalizar el pedido');
-});
-
-
-
-module.exports = router;
+module.exports = viewRouter;

@@ -52,14 +52,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Ruta para procesar la solicitud de inicio de sesión
-router.post('/login', passport.authenticate('local', {
-    successRedirect: '/productos', // Redirige a la vista de productos si la autenticación es exitosa
-    failureRedirect: '/login',
-    failureFlash: true
-  }));
-  
-
 // Ruta para el cierre de sesión
 router.get('/logout', (req, res) => {
   req.logout();

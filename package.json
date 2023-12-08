@@ -1,15 +1,19 @@
 {
-  "dependencies": {
-    "bcrypt": "^5.1.1",
-    "express": "^4.18.2",
-    "mongoose": "^7.6.3"
-  },
   "name": "desafio4-flores",
   "description": "-",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "connect-flash": "^0.1.1",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "mongoose": "^7.6.3",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0"
   },
   "repository": {
     "type": "git",
