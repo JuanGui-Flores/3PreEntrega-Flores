@@ -12,8 +12,7 @@ const initDB = require('./config/db');
 const authRouter = require('./routes/authRouter');
 const userRoutes = require('./routes/users');
 const UserController = require('../controllers/userController');
-
-
+const currentMiddleware = require('./middleware/middleware');
 
 initDB();
 
@@ -106,6 +105,9 @@ Producto.find({}, (err, products) => {
 
 // Rutas de autenticación
 app.use('/auth', authRouter);
+
+// Rutas de usuarios con el middleware
+app.use('/users', currentMiddleware, userRoutes);
 
 // Resto de las rutas y configuraciones de la aplicación...
 
