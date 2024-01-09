@@ -15,6 +15,8 @@ const UserController = require("../controllers/userController");
 const currentMiddleware = require("./middleware/middleware");
 const transporter = require("./emailConfig");
 const nodemailer = require("nodemailer");
+const UsuarioFactory = require('./factories/UsuarioFactory');
+
 
 initDB();
 
@@ -136,6 +138,10 @@ const transporter = nodemailer.createTransport({
     pass: "tucontraseña",
   },
 });
+
+// Uso de la Factory con DTO
+const usuarioFactory = new UsuarioFactory();
+const usuarioDTO = usuarioFactory.crearUsuarioDTO("aaaa", "aaaa@ejemplo.com");
 
 // Iniciar el servidor HTTP
 const PORT = process.env.PORT || 3000;
