@@ -16,6 +16,8 @@ const currentMiddleware = require("./middleware/middleware");
 const transporter = require("./emailConfig");
 const nodemailer = require("nodemailer");
 const UsuarioFactory = require('./factories/UsuarioFactory');
+const Ticket = require('./models/Ticket');
+
 
 
 initDB();
@@ -142,6 +144,24 @@ const transporter = nodemailer.createTransport({
 // Uso de la Factory con DTO
 const usuarioFactory = new UsuarioFactory();
 const usuarioDTO = usuarioFactory.crearUsuarioDTO("aaaa", "aaaa@ejemplo.com");
+
+
+// Crear un nuevo Ticket
+const nuevoTicket = new Ticket({
+  amount: 100.50, // Cambia el valor según tu caso
+  purchaser: 'usuario@example.com' // Cambia el valor según tu caso
+});
+
+// Guardar el Ticket en la base de datos
+nuevoTicket.save()
+    .then(ticket => {
+        console.log('Ticket creado con éxito:', ticket);
+        // Puedes realizar acciones adicionales después de guardar el ticket
+    })
+    .catch(error => {
+        console.error('Error al crear el Ticket:', error);
+    });
+
 
 // Iniciar el servidor HTTP
 const PORT = process.env.PORT || 3000;
