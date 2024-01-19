@@ -17,6 +17,8 @@ const transporter = require("./emailConfig");
 const nodemailer = require("nodemailer");
 const UsuarioFactory = require('./factories/UsuarioFactory');
 const Ticket = require('./models/Ticket');
+const crypto = require('crypto');
+const Usuario = require('./models/Usuario');
 
 
 
@@ -161,6 +163,140 @@ nuevoTicket.save()
     .catch(error => {
         console.error('Error al crear el Ticket:', error);
     });
+
+
+    // Ruta para solicitar recuperación de contraseña
+app.post('/recuperar-contrasena', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Verificar si el correo existe en la base de datos
+    const usuario = await Usuario.findOne({ email });
+
+    if (!usuario) {
+      return res.status(404).json({ message: 'Correo electrónico no encontrado' });
+    }
+
+    // Generar un token único y guardarlo en el usuario
+    const token = crypto.randomBytes(20).toString('hex');
+    usuario.resetToken = token;
+    usuario.resetTokenExpiracion = Date.now() + 3600000; // Expira en 1 hora
+
+    // Guardar el token en la base de datos
+    await usuario.save();
+
+    // Enviar un correo con el enlace de recuperación
+    const resetURL = `http://localhost:3000/reset/${token}`; // Reemplaza con tu URL de producción
+    await transporter.sendMail({
+      to: email,
+      subject: 'Recuperación de Contraseña',
+      html: `Haz clic <a href="${resetURL}">aquí</a> para restablecer tu contraseña.`,
+    });
+
+    res.json({ message: 'Correo de recuperación enviado con éxito.' });
+  } catch (error) {
+    console.error('Error al solicitar recuperación de contraseña:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+});
+
+// Ruta para la página de cambio de contraseña
+app.get('/reset/:token', async (req, res) => {
+  const { token } = req.params;
+
+  try {
+    // Buscar al usuario con el token proporcionado
+    const usuario = await Usuario.findOne({
+      resetToken: token,
+      resetTokenExpiracion: { $gt: Date.now() },
+    });
+
+    if (!usuario) {
+      return res.status(400).json({ message: 'Token inválido o expirado' });
+    }
+
+    // Renderizar la página de cambio de contraseña
+    res.render('reset', { token });
+  } catch (error) {
+    console.error('Error al procesar la página de cambio de contraseña:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+});
+
+// Ruta para cambiar la contraseña
+app.post('/reset/:token', async (req, res) => {
+  const { token } = req.params;
+  const { newPassword, confirmPassword } = req.body;
+
+  try {
+    // Buscar al usuario con el token proporcionado
+    const usuario = await Usuario.findOne({
+      resetToken: token,
+      resetTokenExpiracion: { $gt: Date.now() }, // Verificar que el token no haya expirado
+    });
+
+    if (!usuario) {
+      return res.status(400).json({ message: 'Token inválido o expirado' });
+    }
+
+    // Verificar que la nueva contraseña no sea la misma que la antigua
+    if (newPassword === usuario.password) {
+      return res.redirect(`/reset/${token}?error=La nueva contraseña no puede ser la misma que la anterior`);
+    }
+
+    // Restablecer la contraseña del usuario con la nueva contraseña
+    usuario.password = newPassword;
+
+    // Limpiar el token de recuperación
+    usuario.resetToken = undefined;
+    usuario.resetTokenExpiracion = undefined;
+
+    // Guardar el usuario actualizado en la base de datos
+    await usuario.save();
+
+    res.json({ message: 'Contraseña restablecida con éxito.' });
+  } catch (error) {
+    console.error('Error al cambiar la contraseña:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+});
+
+// Ruta para manejar enlaces expirados
+app.get('/reset-expirado', (req, res) => {
+  res.render('reset-expirado');
+});
+
+
+// Ruta para regenerar el correo de restablecimiento
+app.post('/regenerar-correo', async (req, res) => {
+  try {
+    // Buscar al usuario con el token proporcionado
+    const usuario = await Usuario.findOne({
+      resetToken: token,
+      resetTokenExpiracion: { $gt: Date.now() },
+    });
+
+  try {
+    // Lógica para generar un nuevo token y enviar el correo
+    const token = crypto.randomBytes(20).toString('hex');
+    usuario.resetToken = token;
+    usuario.resetTokenExpiracion = Date.now() + 3600000; // Expira en 1 hora
+
+    await usuario.save();
+
+    const resetURL = `http://localhost:3000/reset/${token}`; // Reemplaza con tu URL de producción
+    await transporter.sendMail({
+      to: usuario.email,
+      subject: 'Recuperación de Contraseña',
+      html: `Haz clic <a href="${resetURL}">aquí</a> para restablecer tu contraseña.`,
+    });
+
+    res.json({ message: 'Nuevo correo de recuperación enviado con éxito.' });
+  } catch (error) {
+    console.error('Error al regenerar el correo de recuperación:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+});
 
 
 // Iniciar el servidor HTTP
