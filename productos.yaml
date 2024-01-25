@@ -1,0 +1,107 @@
+openapi: 3.0.0
+info:
+  title: Documentación de la API de Productos
+  version: 1.0.0
+paths:
+  /productos:
+    get:
+      summary: Obtener todos los productos
+      responses:
+        '200':
+          description: Lista de productos obtenidos correctamente
+          content:
+            application/json:
+              example:
+                - id: 1
+                  nombre: Producto 1
+                  precio: 19.99
+                - id: 2
+                  nombre: Producto 2
+                  precio: 29.99
+    post:
+      summary: Crear un nuevo producto
+      requestBody:
+        description: Datos del nuevo producto
+        required: true
+        content:
+          application/json:
+            example:
+              nombre: Nuevo Producto
+              precio: 39.99
+      responses:
+        '201':
+          description: Producto creado exitosamente
+          content:
+            application/json:
+              example:
+                id: 3
+                nombre: Nuevo Producto
+                precio: 39.99
+
+  /productos/{id}:
+    get:
+      summary: Obtener un producto por ID
+      parameters:
+        - in: path
+          name: id
+          description: ID del producto a obtener
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Producto obtenido correctamente
+          content:
+            application/json:
+              example:
+                id: 1
+                nombre: Producto 1
+                precio: 19.99
+        '404':
+          description: Producto no encontrado
+
+    put:
+      summary: Actualizar un producto por ID
+      parameters:
+        - in: path
+          name: id
+          description: ID del producto a actualizar
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Nuevos datos del producto
+        required: true
+        content:
+          application/json:
+            example:
+              nombre: Producto Actualizado
+              precio: 49.99
+      responses:
+        '200':
+          description: Producto actualizado correctamente
+          content:
+            application/json:
+              example:
+                id: 1
+                nombre: Producto Actualizado
+                precio: 49.99
+        '404':
+          description: Producto no encontrado
+
+    delete:
+      summary: Eliminar un producto por ID
+      parameters:
+        - in: path
+          name: id
+          description: ID del producto a eliminar
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Producto eliminado correctamente
+        '404':
+          description: P
+
+

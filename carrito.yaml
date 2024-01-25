@@ -1,0 +1,88 @@
+openapi: 3.0.0
+info:
+  title: Documentación de la API de Carrito
+  version: 1.0.0
+paths:
+  /carrito:
+    get:
+      summary: Obtener contenido del carrito
+      responses:
+        '200':
+          description: Contenido del carrito obtenido correctamente
+          content:
+            application/json:
+              example:
+                productos:
+                  - id: 1
+                    nombre: Producto 1
+                    precio: 19.99
+                    cantidad: 2
+                  - id: 2
+                    nombre: Producto 2
+                    precio: 29.99
+                    cantidad: 1
+                total: 69.97
+        '404':
+          description: Carrito vacío
+
+    post:
+      summary: Agregar producto al carrito
+      requestBody:
+        description: Datos del producto a agregar al carrito
+        required: true
+        content:
+          application/json:
+            example:
+              id: 3
+              nombre: Nuevo Producto
+              precio: 39.99
+              cantidad: 3
+      responses:
+        '201':
+          description: Producto agregado al carrito correctamente
+          content:
+            application/json:
+              example:
+                mensaje: Producto agregado exitosamente
+
+  /carrito/{idProducto}:
+    put:
+      summary: Actualizar cantidad de un producto en el carrito
+      parameters:
+        - in: path
+          name: idProducto
+          description: ID del producto en el carrito a actualizar
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Nueva cantidad del producto en el carrito
+        required: true
+        content:
+          application/json:
+            example:
+              cantidad: 5
+      responses:
+        '200':
+          description: Cantidad del producto en el carrito actualizada correctamente
+          content:
+            application/json:
+              example:
+                mensaje: Cantidad actualizada exitosamente
+        '404':
+          description: Producto no encontrado en el carrito
+
+    delete:
+      summary: Eliminar producto del carrito
+      parameters:
+        - in: path
+          name: idProducto
+          description: ID del producto en el carrito a eliminar
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Producto eliminado del carrito correctamente
+        '404':
+          description: Producto no encontrado en el carrito
